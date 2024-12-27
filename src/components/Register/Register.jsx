@@ -44,6 +44,7 @@ const Register = () => {
   return (
     <div className="max-w-xl mx-auto mt-20 relative">
       <form onSubmit={handleSubmit}>
+        
         <label className="input input-bordered flex items-center gap-2 mb-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"

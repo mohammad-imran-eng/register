@@ -1,5 +1,6 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import auth from "../../../public/firbase_init";
+import { toast } from "react-toastify";
 
 const SignUp = () => {
 
@@ -7,6 +8,9 @@ const SignUp = () => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
+    const name = e.target.name.value;
+    const photo = e.target.photo.value;
+    console.log(email,password,name,photo);
     // create user with email and password
     createUserWithEmailAndPassword(auth,email,password)
     .then(result => {
@@ -14,11 +18,48 @@ const SignUp = () => {
     }).catch(error=> {
       console.log(error);
     })
+
+    const profile = {
+      displayName: name,
+      photoURL: photo
+    }
+
+    updateProfile(auth.currentUser,profile)
+    .then(()=> {
+      toast("Profile Updated");
+    })
+    .catch((error)=> {
+      toast(error.message);
+    })
   }
   return (
     <div className="max-w-xl mx-auto text-center font-bold mt-10">
       <h1 className="text-4xl mb-20">Signup</h1>
       <form onSubmit={handleRegister}>
+      <div className="form-control">
+            <label className="label mb-1">
+              <span className="label-text">Name</span>
+            </label>
+            <input
+              type="text"
+              name="name"
+              placeholder="name"
+              className="input input-bordered"
+              required
+            />
+          </div>
+          <div className="form-control">
+            <label className="label mb-1">
+              <span className="label-text">Photo</span>
+            </label>
+            <input
+              type="text"
+              name="photo"
+              placeholder="photo url"
+              className="input input-bordered"
+              required
+            />
+          </div>
       <label className="input input-bordered flex items-center gap-2 mb-3">
         <svg
           xmlns="http://www.w3.org/2000/svg"

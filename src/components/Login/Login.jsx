@@ -1,18 +1,46 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import auth from "../../../public/firbase_init";
 import { toast } from "react-toastify";
+import { useRef } from "react";
 
 const Login = () => {
+  const emailRef = useRef();
+  const handleForgotPassword = ()=> {
+    const email = emailRef.current.value;
+    if(!email){
+      toast("Provide a valid Email address");
+    }
+    else{
+      sendPasswordResetEmail(auth,email)
+      .then(()=>{
+        toast('Password reset email sent!');
+      })
+      .catch((error)=>{
+        toast(error.message);
+      })
+    }
+  }
   const handleLogin = (e)=> {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
+   
     console.log(email,password);
 
     signInWithEmailAndPassword(auth,email,password)
     .then(result=> {
-      console.log(result.uesr);
-      toast("Login Successful");
+      console.log(result.user);
+      sendEmailVerification(auth.currentUser)
+      .then(result=> {
+        console.log(result);
+      })
+      
+      if(!result.user.emailVerified){
+        toast("Please verify your email");
+      }
+      else {
+        toast("Login Successful");
+      }
     })
     .catch(error=> {
       console.log(error.message);
@@ -29,6 +57,7 @@ const Login = () => {
               <span className="label-text">Email</span>
             </label>
             <input
+              ref={emailRef}
               type="email"
               name="email"
               placeholder="email"
@@ -47,8 +76,8 @@ const Login = () => {
               className="input input-bordered"
               required
             />
-            <label className="label">
-              <a href="#" className="label-text-alt link link-hover">
+            <label onClick={handleForgotPassword} className="label">
+              <a  className="label-text-alt link link-hover">
                 Forgot password?
               </a>
             </label>
